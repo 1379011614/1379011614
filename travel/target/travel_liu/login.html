@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>黑马旅游网-登录</title>
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <link rel="stylesheet" type="text/css" href="css/login.css">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!--导入angularJS文件-->
+    <script src="js/angular.min.js"></script>
+    <!--导入jquery-->
+    <script src="js/jquery-3.3.1.js"></script>
+	<script>
+		//校验用户名
+		function checkUsername() {
+			//获取文本框输入
+			var username = $("#username").val();
+			//定义正则表达式:(字母开头，允许5-16字节，允许字母数字下划线)
+			var reg_username = /^[a-zA-Z][a-zA-Z0-9_]{4,15}$/;
+			//判断并给出提示信息
+			var flag = reg_username.test(username);
+			if (flag) {
+				//符合,边框变绿
+				$("#username").css("border", "1px solid green");
+				$("#username").css("color", "#93b5cf");
+			} else {
+				//不符合,边框变红, placeholder提示输入不符合
+				$("#username").css("border", "1px solid red");
+				$("#username").val("");
+				$("#username").prop("placeholder", "字母开头，5-16位字母数字");
+				$("#username").css("color", "red");
+			}
+			return flag;
+		}
+
+		//校验密码
+		function checkPassword() {
+			//获取文本框输入
+			var password = $("#password").val();
+			//定义正则表达式:(以字母开头，长度在6~18之间，只能包含字母、数字和下划线)
+			var reg_password = /^[a-zA-Z]\w{5,17}$/;
+			//判断并给出提示信息
+			var flag = reg_password.test(password);
+			if (flag) {
+				//符合,边框变绿
+				$("#password").css("border", "1px solid green");
+				$("#password").css("color", "#93b5cf");
+			} else {
+				//不符合,边框变红, placeholder提示输入不符合
+				$("#password").css("border", "1px solid red");
+				$("#password").val("");
+				$("#password").prop("placeholder", "字母开头，6~18位字母、数字和下划线");
+				$("#password").css("color", "red");
+			}
+			return flag;
+		}
+		//校验验证码
+		function checkCode() {
+			//获取文本框输入
+			var check = $("#check").val();
+			//定义正则表达式:非空
+			var reg_check = /.+/;
+			//判断并给出提示信息
+			var flag = reg_check.test(check);
+			if (flag) {
+				//符合,边框变绿
+				$("#check").css("border", "1px solid green");
+				$("#check").css("color", "#93b5cf");
+
+			} else {
+				$("#check").css("border", "1px solid red");
+				$("#check").val("");
+				$("#check").prop("placeholder", "请输入验证码");
+				$("#check").css("color", "red");
+			}
+			return flag;
+		}
+
+		$(function () {
+			//当相应的填写事件离焦后调用相应方法
+			$("#username").blur(checkUsername);
+			$("#password").blur(checkPassword);
+			$("#check").blur(checkCode);
+			//1.给登录按钮绑定单击事件
+			$("#btn_sub").click(function () {
+				if (checkUsername() && checkPassword() && checkCode()){
+					// 2.发送ajax请求，提交表单数据
+					$.post("user/login", $("#loginForm").serialize(), function (data) {
+						// 3.处理响应结果
+						if (data.flag) {
+							//登录成功
+							location.href = "http://47.103.211.88/travel_liu/index.html";
+						} else {
+							//登录失败
+							$("#errorMsg").html(data.errorMsg);
+						}
+					});
+				}
+				return false;
+			});
+		});
+
+
+	</script>
+</head>
+
+<body>
+<!--引入头部-->
+<div id="header"></div>
+<!-- 头部 end -->
+<section id="login_wrap">
+    <div class="fullscreen-bg" style="background: url(images/login_bg.png);height: 532px;">
+
+    </div>
+    <div class="login-box">
+        <div class="title">
+            <img src="images/login_logo.png" alt="">
+            <span>欢迎登录黑马旅游账户</span>
+        </div>
+        <div class="login_inner">
+
+            <!--登录错误提示消息-->
+            <div id="errorMsg" class="alert alert-danger"></div>
+            <form id="loginForm" action="" method="post" accept-charset="utf-8">
+                <input type="hidden" name="action" value="login"/>
+                <input id="username" name="username" type="text" placeholder="请输入账号" autocomplete="off">
+                <input id="password" name="password" type="text" placeholder="请输入密码" autocomplete="off">
+                <div class="verify">
+                    <input id="check" name="check" type="text" placeholder="请输入验证码" autocomplete="off">
+                    <span><img src="checkCode" alt="" onclick="changeCheckCode(this)"></span>
+                    <script type="text/javascript">
+                        //图片点击事件
+                        function changeCheckCode(img) {
+                            img.src = "checkCode?" + new Date().getTime();
+                        }
+                    </script>
+                </div>
+                <div class="submit_btn">
+                    <button id="btn_sub" type="button">登录</button>
+                    <div class="auto_login">
+                        <input type="checkbox" name="" class="checkbox">
+                        <span>自动登录</span>
+                    </div>
+                </div>
+            </form>
+            <div class="reg">没有账户？<a href="http://47.103.211.88/travel_liu/register.html">立即注册</a></div>
+        </div>
+    </div>
+</section>
+<!--引入尾部-->
+<div id="footer"></div>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="js/jquery-1.11.0.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="js/bootstrap.min.js"></script>
+<!--导入布局js，共享header和footer-->
+<script type="text/javascript" src="js/include.js"></script>
+</body>
+
+</html>
